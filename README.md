@@ -15,9 +15,9 @@ Personal finance app for income allocation, savings tracking, and insights.
 podman compose up --build
 ```
 
-- Frontend: http://localhost
+- Frontend: http://localhost:8080 (port 8080 for rootless Podman)
 - Backend API: http://localhost:8000
-- API docs: http://localhost:8000/docs
+- API docs: http://localhost:8000/docs (use this URL directly—frontend does not proxy /api)
 
 ## Local Development (without containers)
 
