@@ -1,6 +1,8 @@
 services:
   db:
-    image: postgres:16-alpine
+    image: docker.io/library/postgres:16-alpine
+    networks:
+      - app
     environment:
       POSTGRES_USER: financing
       POSTGRES_PASSWORD: financing
@@ -9,6 +11,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+      - "8000:8000"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U financing -d financing"]
       interval: 5s
@@ -17,20 +20,25 @@ services:
 
   backend:
     build: ./backend
-    ports:
-      - "8000:8000"
+    network_mode: "service:db"
     environment:
-      DATABASE_URL: postgresql+asyncpg://financing:financing@db:5432/financing
+      DATABASE_URL: postgresql+asyncpg://financing:financing@127.0.0.1:5432/financing
+      DATABASE_HOST: "127.0.0.1"
     depends_on:
-      db:
-        condition: service_healthy
+      - db
 
   frontend:
     build: ./frontend
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       - backend
+    networks:
+      - app
+
+networks:
+  app:
+    driver: bridge
 
 volumes:
   postgres_data:
